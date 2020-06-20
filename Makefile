@@ -49,14 +49,19 @@ $(OBJ_DIR):
 
 clean:
 	rm -rf $(OBJ_DIR)
+	rm -f Chaos.*
 	rm -f $(BIN)
 
+help: all
+	./$(BIN) -h
+
 run: all
-	./$(BIN)
+	./$(BIN) -s
 
 # This target will eventually also compile the LaTeX file into a PDF
 book: all
-	./$(BIN)
+	./$(BIN) -l
+	pdflatex Chaos.tex
 
 debug: all
 	gdb ./$(BIN)

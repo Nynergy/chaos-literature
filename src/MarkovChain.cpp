@@ -61,12 +61,12 @@ std::string MarkovChain::generateTitle() {
 	}
 
 	// Remove any stray punctuation or odd characters
-	title = removeChar(title, '.');
-	title = removeChar(title, ',');
-	title = removeChar(title, '"');
-	title = removeChar(title, '-');
-	title = removeChar(title, '_');
-	title = removeChar(title, '=');
+	std::unordered_set<char> removables = {
+		'.', ',', '"', '-', '_', '=', ';'
+	};
+	for(auto & ch : removables) {
+		title = removeChar(title, ch);
+	}
 
 	// Make title TitleCase
 	title = toTitleCase(title);
@@ -203,7 +203,7 @@ bool MarkovChain::isHangingTitle(std::string lastWord) {
 	std::unordered_set<std::string> hangers = {
 		"of", "is", "a", "the", "by", "and", "or", "in", "be",
 		"with", "for", "been", "that", "Mr", "Mrs", "Dr", "his",
-		"was", "we"
+		"was", "we", "to", "it", "as", "our"
 	};
 
 	for(auto & hanger : hangers) {
