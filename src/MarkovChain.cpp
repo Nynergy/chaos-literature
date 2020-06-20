@@ -115,6 +115,11 @@ std::string MarkovChain::generateSentence() {
 		sentence += ".";
 	}
 
+	// If first character is not capitalized, capitalize it
+	if(sentence.at(0) >= 'a' && sentence.at(0) <= 'z') {
+		sentence.at(0) = sentence.at(0) + 'A' - 'a';
+	}
+
 	return sentence;
 }
 
@@ -203,7 +208,8 @@ bool MarkovChain::isHangingTitle(std::string lastWord) {
 	std::unordered_set<std::string> hangers = {
 		"of", "is", "a", "the", "by", "and", "or", "in", "be",
 		"with", "for", "been", "that", "Mr", "Mrs", "Dr", "his",
-		"was", "we", "to", "it", "as", "our"
+		"was", "we", "to", "it", "as", "our", "they", "have",
+		"also", "than"
 	};
 
 	for(auto & hanger : hangers) {

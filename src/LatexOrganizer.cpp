@@ -10,14 +10,14 @@ void LatexOrganizer::writeToFile() {
 
 	std::string section1 = mkchain->generateTitle();
 
-	std::string paragraph1 = mkchain->generateParagraph();
-	std::string paragraph2 = mkchain->generateParagraph();
+	std::string paragraph1 = makeFriendly(mkchain->generateParagraph());
+	std::string paragraph2 = makeFriendly(mkchain->generateParagraph());
 
 	std::string section2 = mkchain->generateTitle();
 
-	std::string paragraph3 = mkchain->generateParagraph();
-	std::string paragraph4 = mkchain->generateParagraph();
-	std::string paragraph5 = mkchain->generateParagraph();
+	std::string paragraph3 = makeFriendly(mkchain->generateParagraph());
+	std::string paragraph4 = makeFriendly(mkchain->generateParagraph());
+	std::string paragraph5 = makeFriendly(mkchain->generateParagraph());
 
 	// Memoir class document
 	outfile << "\\documentclass[11pt, oneside, onecolumn]{memoir}" << std::endl;
@@ -75,4 +75,15 @@ void LatexOrganizer::writeToFile() {
 	outfile << "\\end{document}" << std::endl;
 
 	outfile.close();
+}
+
+std::string LatexOrganizer::makeFriendly(std::string str) {
+	// Escape underscores so latex doesn't complain about them
+	std::size_t underscoreIndex = str.find("_");
+	while(underscoreIndex != std::string::npos) {
+		str.replace(underscoreIndex, std::string::npos, "\\_");
+		underscoreIndex = str.find("_", underscoreIndex + 2);
+	}
+
+	return str;
 }

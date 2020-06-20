@@ -14,4 +14,6 @@ private:
 	MarkovChain * mkchain;
 	std::ofstream outfile;
 
+	std::string makeFriendly(std::string str);
+
 };
