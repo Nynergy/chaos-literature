@@ -205,7 +205,9 @@ bool MarkovChain::isHangingTitle(std::string lastWord) {
 		"of", "is", "a", "the", "by", "and", "or", "in", "be",
 		"with", "for", "been", "that", "Mr", "Mrs", "Dr", "his",
 		"was", "we", "to", "it", "as", "our", "they", "have",
-		"also", "than", "had", "when", "at"
+		"also", "than", "had", "when", "at", "my", "but", "if",
+		"she", "its", "has", "their", "any", "every", "would",
+		"no", "where", "were", "so", "while"
 	};
 
 	for(auto & hanger : hangers) {

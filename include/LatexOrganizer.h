@@ -19,6 +19,7 @@ private:
 	void writeParagraph();
 	void writeSection();
 	void writeChapter();
+	void writePart();
 	std::string makeFriendly(std::string str);
 
 };

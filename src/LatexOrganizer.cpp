@@ -6,23 +6,33 @@ LatexOrganizer::LatexOrganizer(MarkovChain * mkchainIn) : mkchain(mkchainIn) {
 
 void LatexOrganizer::writeToFile() {
 	// Memoir class document
-	outfile << "\\documentclass[11pt, oneside, onecolumn]{memoir}" << std::endl;
+	outfile << "\\documentclass[11pt, twoside, onecolumn]{memoir}" << std::endl;
 
 	writeDocumentStyling();
-
-	writeTitlePage();
 
 	// Open document environment
 	outfile << "\\begin{document}" << std::endl << std::endl;
 
-	// Render title page
-	outfile << "\\maketitle" << std::endl;
+	outfile << "\\raggedbottom" << std::endl << std::endl;
 
-	// Randomly decide how many chapters to write
-	int nbChapters = RandUtil::randBetween(3, 7);
-	while(nbChapters > 0) {
-		writeChapter();
-		nbChapters--;
+	// Render title page
+	writeTitlePage();
+
+	// Set page and chapter style
+	std::string pageStyle = "ruled";
+	outfile << "\\pagestyle{" << pageStyle << "}" << std::endl;
+
+	std::string chapterStyle = "thatcher";
+	outfile << "\\chapterstyle{" << chapterStyle << "}" << std::endl;
+
+	// Write ToC
+	outfile << "\\tableofcontents*" << std::endl << std::endl;
+
+	// Randomly decide how many parts to write
+	int nbParts = RandUtil::randBetween(3, 6);
+	while(nbParts > 0) {
+		writePart();
+		nbParts--;
 	}
 
 	// Close document environment
@@ -32,45 +42,91 @@ void LatexOrganizer::writeToFile() {
 }
 
 void LatexOrganizer::writeDocumentStyling() {
+	// Packages
+	outfile << "\\usepackage[sc]{mathpazo}" << std::endl;
+	outfile << "\\linespread{1.05}" << std::endl;
+	outfile << "\\usepackage[T1]{fontenc}" << std::endl << std::endl;
+
 	// Stock, trim, and page size
 	outfile << "\\setstocksize{9in}{6in}" << std::endl;
 	outfile << "\\settrimmedsize{9in}{6in}{*}" << std::endl;
 	outfile << "\\settrims{0pt}{0pt}" << std::endl;
 
 	// Typeblock and margin size
-	outfile << "\\settypeblocksize{8in}{30pc}{*}" << std::endl;
-	outfile << "\\setlrmargins{*}{*}{*}" << std::endl;
+	outfile << "\\settypeblocksize{7.5in}{27pc}{*}" << std::endl;
+	outfile << "\\setlrmargins{*}{*}{1.618}" << std::endl;
 	outfile << "\\setulmargins{*}{*}{*}" << std::endl;
 
 	// Header and footer lengths
-	outfile << "\\setheadfoot{\\baselineskip}{\\baselineskip}" << std::endl;
+	outfile << "\\setheadfoot{1.2\\baselineskip}{2\\baselineskip}" << std::endl;
 	outfile << "\\setheaderspaces{*}{*}{*}" << std::endl;
 
 	// Fix layout
 	outfile << "\\checkandfixthelayout" << std::endl;
 
-	// Custom chapter styles
-	outfile << "\\renewcommand{\\chaptitlefont}{\\normalfont\\Large\\scshape}" << std::endl;
+	// Custom ToC Style
+	outfile << "\\renewcommand{\\contentsname}{Table of Contents}" << std::endl;
+
+	// Custom part styles
+	outfile << "\\renewcommand{\\partnamefont}{\\normalfont\\LARGE\\scshape}" << std::endl;
+	outfile << "\\renewcommand{\\partnumfont}{\\normalfont\\LARGE\\scshape}" << std::endl;
+	outfile << "\\renewcommand{\\parttitlefont}{\\normalfont\\LARGE\\scshape}" << std::endl;
+	outfile << "\\renewcommand{\\midpartskip}{\\par\\hrulefill\\vspace{\\onelineskip}\\par}" << std::endl;
+
+	// Custom section styles
+	outfile << "\\setsecheadstyle{\\large\\bfseries\\centering}" << std::endl;
 }
 
-/*
- * NOTE: This simply writes the code that populates title page values.
- * The page is actually rendered in the document environment in the
- * writeToFile() method.
- */
 void LatexOrganizer::writeTitlePage() {
 	std::string title = makeFriendly(mkchain->generateTitle());
+	std::string subtitle = makeFriendly(mkchain->generateTitle());
 
-	// Construct title page
-	outfile << "\\title{" << title << "}" << std::endl;
-	outfile << "\\date{\\today}" << std::endl;
-	outfile << "\\author{Mark O. V.}" << std::endl;
+	outfile << "\\thispagestyle{empty}" << std::endl << std::endl;
+
+	outfile << "\\newlength\\drop" << std::endl;
+	outfile << "\\makeatletter" << std::endl;
+	outfile << "\\begingroup%" << std::endl;
+	outfile << "\\setlength\\drop{0.2\\textheight}" << std::endl;
+	outfile << "\\centering" << std::endl;
+	outfile << "\\vspace*{\\drop}" << std::endl;
+	outfile << "{\\Huge\\bfseries " << title << "}\\\\[\\baselineskip]" << std::endl;
+	outfile << "{\\par\\hrulefill\\vspace{\\baselineskip}\\par}" << std::endl;
+	outfile << "{\\scshape " << subtitle << "}\\\\[\\baselineskip]" << std::endl;
+	outfile << "\\vfill" << std::endl;
+	outfile << "{\\large\\scshape Mark O. Vega}\\par" << std::endl;
+	outfile << "\\vfill" << std::endl;
+	outfile << "{\\scshape \\@date}\\par" << std::endl;
+	outfile << "\\vspace*{1.5\\drop}" << std::endl;
+	outfile << "\\endgroup" << std::endl;
+	outfile << "\\makeatother" << std::endl << std::endl;
+
+	outfile << "\\newpage" << std::endl << std::endl;
 }
 
 void LatexOrganizer::writeParagraph() {
 	std::string paragraph = makeFriendly(mkchain->generateParagraph());
 
-	outfile << paragraph << std::endl << std::endl;
+	// Randomly decide on footnotes/margin notes
+	int notes = RandUtil::randBetween(0, 100);
+	if(notes < 25) {
+		// Add a footnote to the end of the paragraph
+		std::string footnote = makeFriendly(mkchain->generateSentence());
+
+		outfile << paragraph << std::endl;
+
+		outfile << "\\footnote{" << footnote << "}" << std::endl;
+	} else if(notes < 40) {
+		// Add a margin note to the page
+		std::string margin = makeFriendly(mkchain->generateSentence());
+
+		outfile << "\\marginpar{\\tiny{" << margin << "}}" << std::endl;
+
+		outfile << paragraph << std::endl;
+	} else {
+		outfile << paragraph << std::endl;
+	}
+
+	outfile << std::endl;
 }
 
 void LatexOrganizer::writeSection() {
@@ -79,9 +135,16 @@ void LatexOrganizer::writeSection() {
 	outfile << "\\section{" << section << "}" << std::endl << std::endl;
 
 	// Decide on a random number of paragraphs
-	int nbParagraphs = RandUtil::randBetween(3, 8);
+	int nbParagraphs = RandUtil::randBetween(3, 16);
 	while(nbParagraphs > 0) {
 		writeParagraph();
+
+		// Randomly decide on inclusion of breaks
+		int fancyBreak = RandUtil::randBetween(0, 100);
+		if(fancyBreak < 25 && nbParagraphs > 1) {
+			outfile << "\\fancybreak{{\\vspace*{\\onelineskip}}{* * *}{\\vspace*{\\onelineskip}}}" << std::endl << std::endl;
+		}
+
 		nbParagraphs--;
 	}
 }
@@ -91,11 +154,30 @@ void LatexOrganizer::writeChapter() {
 
 	outfile << "\\chapter{" << chapter << "}" << std::endl << std::endl;
 
+	// Write an epigraph that appears before the first paragraph
+	std::string epigraph = makeFriendly(mkchain->generateSentence());
+	int year = RandUtil::randBetween(500, 2020);
+
+	outfile << "\\epigraph{\"" << epigraph << "\"}{Anonymous, ca. " << year << "}" << std::endl << std::endl;
+
 	// Decide on a random number of sections
 	int nbSections = RandUtil::randBetween(2, 6);
 	while(nbSections > 0) {
 		writeSection();
 		nbSections--;
+	}
+}
+
+void LatexOrganizer::writePart() {
+	std::string part = makeFriendly(mkchain->generateTitle());
+
+	outfile << "\\part{" << part << "}" << std::endl << std::endl;
+
+	// Decide on a random number of chapters
+	int nbChapters = RandUtil::randBetween(3, 6);
+	while(nbChapters > 0) {
+		writeChapter();
+		nbChapters--;
 	}
 }
 

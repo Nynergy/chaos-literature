@@ -61,7 +61,8 @@ run: all
 # This target will eventually also compile the LaTeX file into a PDF
 book: all
 	./$(BIN) -l
-	pdflatex Chaos.tex
+	# Compile the document three times to ensure proper ToC hooks
+	pdflatex Chaos.tex && pdflatex Chaos.tex && pdflatex Chaos.tex
 
 debug: all
 	gdb ./$(BIN)
