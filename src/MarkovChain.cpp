@@ -34,7 +34,7 @@ void MarkovChain::addBeginning(std::string begin) {
 std::string MarkovChain::generateTitle() {
 	// Generate a sentence and cut it down to around 5 words
 	std::string sentence = generateSentence();
-	int nbWords = randBetween(2, 10);
+	int nbWords = RandUtil::randBetween(2, 10);
 
 	std::size_t index = sentence.find(" ");
 	while(nbWords > 0 && index != std::string::npos) {
@@ -76,7 +76,7 @@ std::string MarkovChain::generateTitle() {
 
 std::string MarkovChain::generateSentence() {
 	// Randomly select a beginning
-	auto randomIt = std::next(std::begin(beginnings), randBetween(0, beginnings.size()));
+	auto randomIt = std::next(std::begin(beginnings), RandUtil::randBetween(0, beginnings.size()));
 	std::string begin = *randomIt;
 	
 	// Begin walking the ngram chain until an endpoint is found
@@ -87,7 +87,7 @@ std::string MarkovChain::generateSentence() {
 		if(ngrams.find(current) == ngrams.end()) { break; }
 
 		std::unordered_set<std::string> suffixes = ngrams.at(current);
-		randomIt = std::next(std::begin(suffixes), randBetween(0, suffixes.size()));
+		randomIt = std::next(std::begin(suffixes), RandUtil::randBetween(0, suffixes.size()));
 		std::string suffix = *randomIt;
 
 		std::size_t index = current.find(" ");
@@ -125,7 +125,7 @@ std::string MarkovChain::generateSentence() {
 
 std::string MarkovChain::generateParagraph() {
 	// Generate a number of sentences and concatenate them
-	int nbSentences = randBetween(3, 7);
+	int nbSentences = RandUtil::randBetween(3, 7);
 	
 	std::string paragraph = "";
 	while(nbSentences > 0) {
@@ -200,16 +200,12 @@ std::string MarkovChain::toTitleCase(std::string str) {
 	return str;
 }
 
-int MarkovChain::randBetween(int min, int max) {
-	return min + (rand() % (max - min));
-}
-
 bool MarkovChain::isHangingTitle(std::string lastWord) {
 	std::unordered_set<std::string> hangers = {
 		"of", "is", "a", "the", "by", "and", "or", "in", "be",
 		"with", "for", "been", "that", "Mr", "Mrs", "Dr", "his",
 		"was", "we", "to", "it", "as", "our", "they", "have",
-		"also", "than"
+		"also", "than", "had", "when", "at"
 	};
 
 	for(auto & hanger : hangers) {

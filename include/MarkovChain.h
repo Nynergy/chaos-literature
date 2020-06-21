@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "RandUtil.h"
+
 class MarkovChain {
 
 public:
@@ -22,7 +24,6 @@ private:
 	std::string trim(const std::string & str);
 	std::string removeChar(std::string str, char ch);
 	std::string toTitleCase(std::string str);
-	int randBetween(int min, int max);
 	bool isHangingTitle(std::string lastWord);
 
 };
