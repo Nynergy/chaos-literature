@@ -83,22 +83,48 @@ void LatexOrganizer::writeTitlePage() {
 
 	outfile << "\\thispagestyle{empty}" << std::endl << std::endl;
 
-	outfile << "\\newlength\\drop" << std::endl;
-	outfile << "\\makeatletter" << std::endl;
-	outfile << "\\begingroup%" << std::endl;
-	outfile << "\\setlength\\drop{0.2\\textheight}" << std::endl;
-	outfile << "\\centering" << std::endl;
-	outfile << "\\vspace*{\\drop}" << std::endl;
-	outfile << "{\\Huge\\bfseries " << title << "}\\\\[\\baselineskip]" << std::endl;
-	outfile << "{\\par\\hrulefill\\vspace{\\baselineskip}\\par}" << std::endl;
-	outfile << "{\\scshape " << subtitle << "}\\\\[\\baselineskip]" << std::endl;
-	outfile << "\\vfill" << std::endl;
-	outfile << "{\\large\\scshape Mark O. Vega}\\par" << std::endl;
-	outfile << "\\vfill" << std::endl;
-	outfile << "{\\scshape \\@date}\\par" << std::endl;
-	outfile << "\\vspace*{1.5\\drop}" << std::endl;
-	outfile << "\\endgroup" << std::endl;
-	outfile << "\\makeatother" << std::endl << std::endl;
+	// Randomly decide on a title layout
+	int nbTitle = RandUtil::randBetween(0, 100);
+	if(nbTitle < 50) {
+		outfile << "\\newlength\\drop" << std::endl;
+		outfile << "\\makeatletter" << std::endl;
+		outfile << "\\begingroup%" << std::endl;
+		outfile << "\\setlength\\drop{0.2\\textheight}" << std::endl;
+		outfile << "\\centering" << std::endl;
+		outfile << "\\vspace*{\\drop}" << std::endl;
+		outfile << "{\\Huge\\bfseries " << title << "}\\\\[\\baselineskip]" << std::endl;
+		outfile << "{\\par\\hrulefill\\vspace{\\baselineskip}\\par}" << std::endl;
+		outfile << "{\\scshape " << subtitle << "}\\\\[\\baselineskip]" << std::endl;
+		outfile << "\\vfill" << std::endl;
+		outfile << "{\\large\\scshape Mark O. Vega}\\par" << std::endl;
+		outfile << "\\vfill" << std::endl;
+		outfile << "{\\scshape \\@date}\\par" << std::endl;
+		outfile << "\\vspace*{1.5\\drop}" << std::endl;
+		outfile << "\\endgroup" << std::endl;
+		outfile << "\\makeatother" << std::endl << std::endl;
+	} else {
+		outfile << "\\makeatletter" << std::endl;
+		outfile << "\\begingroup%" << std::endl;
+		outfile << "\\vspace*{\\baselineskip}" << std::endl;
+		outfile << "\\vfill" << std::endl;
+		outfile << "\\hbox{%" << std::endl;
+		outfile << "\\hspace*{0.2\\textwidth}%" << std::endl;
+		outfile << "\\rule{4pt}{\\dimexpr\\textheight-42pt\\relax}%" << std::endl;
+		outfile << "\\hspace*{0.05\\textwidth}%" << std::endl;
+		outfile << "\\parbox[b]{0.75\\textwidth}{" << std::endl;
+		outfile << "\\vbox{%" << std::endl;
+		outfile << "\\begin{flushright}" << std::endl;
+		outfile << "{\\noindent\\HUGE\\scshape " << title << "}\\\\[2\\baselineskip]" << std::endl;
+		outfile << "{\\Large\\itshape " << subtitle << "}\\\\[\\baselineskip]" << std::endl;
+		outfile << "{\\LARGE\\scshape Mark O. Vega}\\\\[\\baselineskip]" << std::endl;
+		outfile << "\\end{flushright}" << std::endl;
+		outfile << "\\vspace{0.5\\textheight}" << std::endl;
+		outfile << "{\\noindent \\@date}\\\\[\\baselineskip]}}}" << std::endl;
+		outfile << "\\vfill" << std::endl;
+		outfile << "\\null" << std::endl;
+		outfile << "\\endgroup" << std::endl;
+		outfile << "\\makeatother" << std::endl << std::endl;
+	}
 
 	outfile << "\\newpage" << std::endl << std::endl;
 }
@@ -201,6 +227,13 @@ std::string LatexOrganizer::makeFriendly(std::string str) {
 	while(andIndex != std::string::npos) {
 		str.replace(andIndex, std::string::npos, "\\&");
 		andIndex = str.find("&", andIndex + 2);
+	}
+
+	// Escape hashes as well
+	std::size_t hashIndex = str.find("#");
+	while(hashIndex != std::string::npos) {
+		str.replace(hashIndex, std::string::npos, "\\#");
+		hashIndex = str.find("#", hashIndex + 2);
 	}
 
 	return str;

@@ -62,7 +62,7 @@ std::string MarkovChain::generateTitle() {
 
 	// Remove any stray punctuation or odd characters
 	std::unordered_set<char> removables = {
-		'.', ',', '"', '-', '_', '=', ';'
+		'.', ',', '"', '-', '_', '=', ';', ':'
 	};
 	for(auto & ch : removables) {
 		title = removeChar(title, ch);
@@ -204,10 +204,11 @@ bool MarkovChain::isHangingTitle(std::string lastWord) {
 	std::unordered_set<std::string> hangers = {
 		"of", "is", "a", "the", "by", "and", "or", "in", "be",
 		"with", "for", "been", "that", "Mr", "Mrs", "Dr", "his",
-		"was", "we", "to", "it", "as", "our", "they", "have",
+		"was", "Was", "we", "to", "it", "as", "our", "they", "have",
 		"also", "than", "had", "when", "at", "my", "but", "if",
 		"she", "its", "has", "their", "any", "every", "would",
-		"no", "where", "were", "so", "while"
+		"no", "where", "were", "so", "while", "he", "however",
+		"from", "are", "I", "almost", "an", "who", "which"
 	};
 
 	for(auto & hanger : hangers) {
